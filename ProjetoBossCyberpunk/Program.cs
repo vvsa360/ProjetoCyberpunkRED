@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using Microsoft.VisualBasic.FileIO;
 
 namespace MyApp
@@ -20,7 +21,7 @@ namespace MyApp
 ░╚════╝░░░░╚═╝░░░╚═════╝░╚══════╝╚═╝░░╚═╝╚═╝░░░░░░╚═════╝░╚═╝░░╚══╝╚═╝░░╚═╝  ╚═╝░░╚═╝╚══════╝╚═════╝░
 ");
             while (true)
-            {
+            {                
                 ExibirMenu();
                 int opcaoMenu = int.Parse(Console.ReadLine());
                 switch (opcaoMenu)
@@ -30,23 +31,55 @@ namespace MyApp
                         return;
                     case 1:
                         CriarInimigo();
+                        Console.Clear();
                         break;
                     case 2:
-                        ListarInimigos();
+                        ListarInimigos();                      
                         break;
                     case 3:
-                        ModificarInimigos();
+                        AtirarInimigos();                      
                         break;
                     case 4:
                         CortarInimigos();
                         break;
+                    case 5:
+                        DeletarInimigos();
+                        
+                        break;
+                    case 6:
+                        AlterarInimigos();
+                        
+                        break;
                     default:
                         Console.WriteLine("Opção inválida, favor tentar novamente.");
+                        
                         break;
                 }
             }
         }
+        static void DeletarInimigos() {
+            if (inimigos.Count == 0)
+            {
+                Console.WriteLine("Nenhum inimigo foi registrado.");
+                return ;
+            }
 
+            ListarInimigos();
+            Console.WriteLine("\nSelecione o inimigo para deletar.");
+            int inimigoIndex = int.Parse(Console.ReadLine()) - 1;
+
+            if (inimigoIndex < 0 || inimigoIndex >= inimigos.Count)
+            {
+                Console.WriteLine("Inimigo inválido.");
+                return;
+            }
+            Inimigo inimigo = inimigos[inimigoIndex];
+            Console.WriteLine($"\nVocê selecionou {inimigo.Nome}.");
+            inimigos.Remove(inimigo);
+            Console.WriteLine("Inimigo removido com sucesso!");
+
+        }
+        static void AlterarInimigos() { }
         static void ExibirMenu()
         {
             Console.WriteLine("\n-----------MENU--------------------");
@@ -55,6 +88,8 @@ namespace MyApp
             Console.WriteLine("Digite 2 para ver todos os inimigos");
             Console.WriteLine("Digite 3 para dar dano por disparo");
             Console.WriteLine("Digite 4 para dar dano corpo a corpo");
+            Console.WriteLine("Digite 5 para Deletar um inimigo existente");
+            Console.WriteLine("Digite 6 para Alterar as propriedades de um inimigo");
         }
 
         static void CriarInimigo()
@@ -65,9 +100,11 @@ namespace MyApp
             int vida = int.Parse(Console.ReadLine());
             Console.WriteLine($"\nDigite a armadura de {nome}:");
             int armadura = int.Parse(Console.ReadLine());
+            Console.WriteLine($"\nDigite a iniciativa de {nome}");
+            int iniciativa = int.Parse(Console.ReadLine());
 
             // Adicionar o inimigo à lista
-            inimigos.Add(new Inimigo(nome, vida, armadura));
+            inimigos.Add(new Inimigo(nome, vida, armadura, iniciativa));
             Console.WriteLine("\nInimigo registrado com sucesso!");
         }
 
@@ -79,10 +116,11 @@ namespace MyApp
                 return;
             }
 
-            Console.WriteLine("\n----- Lista de Inimigos -----");
+            Console.WriteLine("\n----- Lista de Inimigos ----- (POR INICIATIVA)");
+            var inimigosOrdenados = inimigos.OrderByDescending (i => i.Iniciativa);
             for (int i = 0; i < inimigos.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {inimigos[i].Nome} - Vida: {inimigos[i].Vida}, Armadura: {inimigos[i].Armadura}");
+                Console.WriteLine($"{i + 1}. {inimigos[i].Nome} - Vida: {inimigos[i].Vida}, Armadura: {inimigos[i].Armadura}, Iniciativa: {inimigos[i].Iniciativa}");
             }
         }
 
@@ -147,7 +185,7 @@ namespace MyApp
             }
         }
 
-        static void ModificarInimigos()
+        static void AtirarInimigos()
         {
             if (inimigos.Count == 0)
             {
@@ -220,12 +258,15 @@ namespace MyApp
         public string Nome { get; set; }
         public int Vida { get; set; }
         public int Armadura { get; set; }
+       
+        public int Iniciativa { get; set; }
 
-        public Inimigo(string nome, int vida, int armadura)
+        public Inimigo(string nome, int vida, int armadura, int iniciativa)
         {
             Nome = nome;
             Vida = vida;
             Armadura = armadura;
+            Iniciativa = iniciativa;
         }
     }
 }
